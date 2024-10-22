@@ -1,44 +1,3 @@
-<?php
-// Incluir o arquivo de conexão
-include "conexao.php";
-
-$start = strtotime('8:00:00');
-$end = strtotime('12:00:00');
-$mins = ($end - $start) / 60;
-
-$qnt_de_agendamento = $mins / 30;
-$acumulado = $start;
-
-// Array para armazenar horários já agendados
-$booked_slots = [];
-
-// Consultar horários já agendados na tabela agenda
-$sql = "SELECT horario_inicio FROM agenda WHERE dia_da_semana = ?";
-$stmt = $conn->prepare($sql);
-
-// Obtenha o dia da semana do formulário, se disponível
-if (isset($_POST['dia_da_semana'])) {
-    $dia_da_semana = intval($_POST['dia_da_semana']);
-    $stmt->bind_param("i", $dia_da_semana);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    while ($row = $result->fetch_assoc()) {
-        $booked_slots[] = $row['horario_inicio'];
-    }
-}
-
-$agendamentos = []; // Array para armazenar horários disponíveis
-for ($i = 0; $i < $qnt_de_agendamento; $i++) {
-    $horario = date('H:i', $acumulado);
-    // Verifique se o horário não está agendado
-    if (!in_array($horario, $booked_slots)) {
-        $agendamentos[] = $horario;
-    }
-    $acumulado += 1800; // Adiciona 1800 segundos (30 minutos)
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -103,12 +62,35 @@ for ($i = 0; $i < $qnt_de_agendamento; $i++) {
         <div class="mb-3 mt-3">
             <label for="horario_inicio">Horário início:</label>
             <select class="form-select" id="horario_inicio" name="horario_inicio" required>
-                <option value="">Selecione um horário</option>
-                <?php foreach ($agendamentos as $horario): ?>
-                    <option value="<?php echo $horario; ?>"><?php echo $horario; ?></option>
-                <?php endforeach; ?>
+            <option>Escolha um horário</option>
+        <option value="08:00">08:00</option>
+        <option value="08:30">08:30</option>
+        <option value="09:00">09:00</option>
+        <option value="09:30">09:30</option>
+        <option value="10:00">10:00</option>
+        <option value="10:30">10:30</option>
+        <option value="11:00">11:00</option>
+        <option value="11:30">11:30</option>
+        <option value="12:00">12:00</option>
             </select>
         </div>
+
+        <div class="mb-3 mt-3">
+      <label for="hora_invervalo_inicio">Hora intervalo inicio</label>
+      <input type="time" id="hora_invervalo_inicio" name="hora_invervalo_inicio" class="form-control" value="">
+    </div>
+
+    <div class="mb-3 mt-3">
+      <label for="hora_invervalo_fim">Hora intervalo fim</label>
+      <input type="time" id="hora_invervalo_fim" name="hora_invervalo_fim" class="form-control" value="">
+    </div>
+
+    <div class="mb-3 mt-3">
+      <label for="horario_fim">Horário final</label>
+      <input type="time" id="horario_fim" name="horario_fim" class="form-control" value="">
+    </div>
+
+
 
         <div class="d-flex justify-content-between mt-3">
             <a href="index.php" class="btn btn-primary">Voltar</a>
@@ -121,6 +103,7 @@ for ($i = 0; $i < $qnt_de_agendamento; $i++) {
 </html>
 
 <?php
-// Fechar a conexão
-$conn->close();
+/*
+
+*/
 ?>
